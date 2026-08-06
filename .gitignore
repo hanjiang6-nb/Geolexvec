@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.venv/
+reproduced/
+reproduced_tables/
+ci_reproduced_tables/
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db

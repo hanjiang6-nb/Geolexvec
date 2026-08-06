@@ -1,0 +1,44 @@
+{
+  "formula_version": "unfiltered-average-max-context-entity-cosine-v1",
+  "entity_variant": "AliasAwareFusion",
+  "identity_constraint": "none",
+  "entity_adaptation_anchor_split": "train_only",
+  "held_out_occurrences_used_for_optimization": false,
+  "training_anchor_count": 6605,
+  "training_anchor_sha256": "5959871b338ad465782c8d46a565dd72d72fcf1684ba55fe35d9f22c8fac7c3a",
+  "checkpoint_sha256": "0579dfb7fabcea1996f2e7cdcbb6f5035ee2a8010c44a20073f78fc30e9a8487",
+  "training_protocol": {
+    "anchor_split": "train_only",
+    "base_preservation_weight": 0.5,
+    "context_preservation_weight": 0.2,
+    "epochs": 300,
+    "held_out_occurrence_count": 1600,
+    "held_out_occurrences_used_for_optimization": false,
+    "initial_gate": 0.5,
+    "input_sha256": {
+      "aliases": "9b6faa8228f07a7d5c57c6640dfe108a4910ed92fe8e6c8ec64c218812bdc42c",
+      "index": "3425d16c0095a765c61b1adc413298c11c3d6bb6bf66b96c92dc256b2161d512",
+      "metadata": "a3bd4858f8c553ab4f76e130a31bcb46039f90d68977ac129a3efc9832cb3291",
+      "occurrences": "f5d2736f9b2af54d4abb7a7fdcf5b17705e717b266d828f1051fd2e65bfc42fe",
+      "vectors": "577f4ebba111408dc71d688672d7fc0f562db2ed4dc7eb8da15b34129d3d1b8a"
+    },
+    "learning_rate": 0.002,
+    "margin": 0.2,
+    "qa_relevance_labels_used": false,
+    "rank": 8,
+    "schema": "geolexvec.entity-adapter.training.v1",
+    "temperature": 0.07,
+    "training_anchor_count": 6605,
+    "training_anchor_sha256": "5959871b338ad465782c8d46a565dd72d72fcf1684ba55fe35d9f22c8fac7c3a"
+  },
+  "question_count": 2034,
+  "evidence_count": 1413,
+  "context_nonzero_rate": 0.9411824879385896,
+  "context_positive_mean": 0.39892470836639404,
+  "input_sha256": {
+    "source_cache": "867679e687c42bd88f67bf9d2370c09309f1f8b8afef4bd9825157804931d59a",
+    "query_context": "dd8b0583f46a477a36479979195d9b758b12bb6de9970dc8d60aca7e3400d0bc",
+    "evidence_context": "5c694ac5e3b06250e43638db6f382922cf58409c4672294b4ef2f4ed14f78559"
+  },
+  "output_sha256": "4d974dd19335fd7ebb022302469ac517328d29372b8c969e94e7b9b8d0ab03ac"
+}

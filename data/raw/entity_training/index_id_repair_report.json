@@ -1,0 +1,26 @@
+{
+  "schema": "geolexvec.entity-index-id-repair.v1",
+  "matching_rule": "candidate-order plus normalized exact sentence text",
+  "evidence_rows": 1413,
+  "write_applied": true,
+  "indexes": [
+    {
+      "path": "data/raw/entity_training/indexed_docs.pkl",
+      "rows": 1413,
+      "changed_ids": 1413,
+      "unknown_ids_before": 98,
+      "unknown_ids_after": 0,
+      "sha256_before": "4ea758a9880f23c23ed9ed07c698d1a6a8cde4c2ef3035d858a2ba683a8d8ee0",
+      "sha256_after": "3425d16c0095a765c61b1adc413298c11c3d6bb6bf66b96c92dc256b2161d512"
+    },
+    {
+      "path": "data/raw/entity_training/contextual_index.pkl",
+      "rows": 1413,
+      "changed_ids": 1413,
+      "unknown_ids_before": 98,
+      "unknown_ids_after": 0,
+      "sha256_before": "330bd5a5331c727e8624f118249dad931970d8be45c3d9a5d5136fe838e994da",
+      "sha256_after": "8310f96da46e834999b30afd846610ef425b3edd0c301c7c9c44b911b3bf3af1"
+    }
+  ]
+}

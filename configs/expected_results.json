@@ -1,0 +1,20 @@
+{
+  "questions": 2034,
+  "evidence_candidates": 1413,
+  "vector_seeds": [20260725, 20260726, 20260727],
+  "strict_mrr_at_10": {
+    "AliasAwareFusion": 0.8354003111131921,
+    "WithoutText": 0.6445504466399254,
+    "WithoutEntity": 0.7441363877573316,
+    "WithoutPhrase": 0.8122302471737084
+  },
+  "mean_weights": {
+    "text": 0.5826666666666667,
+    "entity": 0.3373333333333334,
+    "phrase": 0.08
+  },
+  "strict_hit_at_1": 0.7743362831858407,
+  "strict_hit_at_10": 0.9513274336283186,
+  "ndcg_at_10": 0.6663128669756939,
+  "cross_platform_tolerance": 0.0002
+}

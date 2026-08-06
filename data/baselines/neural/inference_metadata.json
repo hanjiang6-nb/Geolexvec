@@ -1,0 +1,18 @@
+{
+  "question_count": 2034,
+  "evidence_count": 1413,
+  "candidate_protocol": {
+    "CrossEncoder": "BM25 top-100 reranking",
+    "BgeM3MultiVector": "BM25 top-100 reranking with late-interaction MaxSim",
+    "BgeM3LearnedSparse": "full-corpus learned sparse retrieval"
+  },
+  "models": {
+    "CrossEncoder": "BAAI/bge-reranker-v2-m3",
+    "BgeM3": "BAAI/bge-m3"
+  },
+  "input_sha256": {
+    "gold": "fa3670e840d4f142c93aa97836f323c7a9980ad49325114a4d59640bec8372ef",
+    "evidence": "30ed5b024035818aa7f38f96b0ff7d8df1780a8e9128e3ded147effe9bb84b06",
+    "lexical": "efa60fffd568581a64681e9f42139f85c81e9d22cb38e7302f8af32d77f6435e"
+  }
+}

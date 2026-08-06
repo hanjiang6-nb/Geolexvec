@@ -1,0 +1,40 @@
+{
+  "scope": "final three-module leave-one-module-out ablation",
+  "models": [
+    "AliasAwareFusion",
+    "WithoutText",
+    "WithoutEntity",
+    "WithoutPhrase"
+  ],
+  "feature_order": [
+    "text",
+    "contextual_entity",
+    "phrase"
+  ],
+  "entity_formula_version": "unfiltered-average-max-context-entity-cosine-v1",
+  "entity_definition": "each query entity uses the maximum non-negative learned cosine over all evidence entities; scores are averaged by query entity count",
+  "vector_definition": "L2-normalized original vector plus rank-8 low-rank residual, followed by gated canonical prototype fusion and a final L2 normalization",
+  "weight_selection": "weights are reselected for every model and outer fold using four grouped inner folds; removed-module weight is constrained to zero",
+  "outer_validation": "five source-document-disjoint folds",
+  "top_k": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "vector_seed": 20260726,
+  "fold_seed": 20260725,
+  "question_count": 2034,
+  "evidence_count": 1413,
+  "cache_fingerprint": "31908bdddd0468b2be24d135d5eff05d76432b51c19ed107775b28fa93433854",
+  "input_sha256": {
+    "gold": "c5fa317fa8c472502fd2d496dd7038b88f2fd0cb57dd6da365745100289591ca",
+    "cache": "f14f1fe18438064c6f9edb4312eb3c9d9232b3a5bb502d008a2de14fc6a85eb0"
+  }
+}

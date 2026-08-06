@@ -1,0 +1,18 @@
+{
+  "questions": 2034,
+  "evidence_candidates": 1413,
+  "models": [
+    "BM25",
+    "TFIDF",
+    "Hybrid",
+    "BgeBaseZhV15",
+    "BgeBaseBm25RRF"
+  ],
+  "bge_model": "BAAI/bge-base-zh-v1.5",
+  "bge_query_instruction": "为这个句子生成表示以用于检索相关文章：",
+  "input_sha256": {
+    "gold": "fa3670e840d4f142c93aa97836f323c7a9980ad49325114a4d59640bec8372ef",
+    "joint_cache": "d5b5fe4b59892ef76d347ac27c345d38d385492c49dbca0365dfabfc121a9796",
+    "document_vectors": "1a1e68815ff669426964e8d26c95a1eec1f1d776e44cff022598b687623dd695"
+  }
+}

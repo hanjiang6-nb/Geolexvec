@@ -127,7 +127,16 @@ to the audited implementation.
 
 Run `python scripts/verify_release.py` and `pytest` to check the package.
 `manifest/SHA256SUMS.txt` records file hashes. No server credentials or server
-paths are included. The repository contains the benchmark text because the
-reproduction request explicitly requires all 2,034 queries and 1,413 candidate
-sentences; users should verify that redistribution is compatible with their
-corpus license before publishing the repository publicly.
+paths are included.
+
+## Licenses
+
+- Software and source code: MIT License.
+- GeoLexVec benchmark queries, annotations, and derived metadata: CC BY 4.0.
+- Candidate evidence sentences: CoalGeoNER Version 1, CC BY 4.0,
+  https://doi.org/10.6084/m9.figshare.32305830.v1.
+- Original scientific publications: copyright remains with their respective
+  rightsholders; complete articles and article abstracts are not redistributed.
+
+See `DATA_LICENSE.md` and `DATA_NOTICE.md` for the data provenance and
+attribution requirements.

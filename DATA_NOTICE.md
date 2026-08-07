@@ -29,6 +29,8 @@ The alias resource is used to supervise representation learning. The final
 retrieval score compares every query entity with every evidence entity using
 the learned vectors; it does not apply a hard alias or same-canonical filter.
 
-Before public redistribution, confirm that the benchmark and candidate-sentence
-texts may be redistributed under the license of the underlying coal-geology
-resources.
+The 1,413 candidate evidence sentences are identical, in both content and
+order, to the sentence records released in CoalGeoNER Version 1 under CC BY
+4.0. This repository does not redistribute complete scientific articles or
+article abstracts. The MIT License applies only to software; benchmark data
+are governed by `DATA_LICENSE.md`.

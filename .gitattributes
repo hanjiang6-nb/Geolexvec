@@ -4,3 +4,4 @@
 *.json text eol=lf
 *.csv text eol=lf
 *.py text eol=lf
+data/raw/entity_training/en_zh_equivalence_audit.json -text -diff

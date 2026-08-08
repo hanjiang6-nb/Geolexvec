@@ -96,8 +96,7 @@ Each released checkpoint embeds the hashes of its alias, occurrence, metadata,
 base-vector, and entity-index inputs, together with the fingerprint of the
 6,605 training anchors. Context transformation verifies the checkpoint protocol
 and the released training inputs before propagating provenance into the feature
-cache. Alias resolution is exact-case first; an unregistered `HF` token is not
-collapsed to registered `Hf`.
+cache.
 
 ## External Baselines
 
@@ -118,12 +117,6 @@ feature values, scores, and reported metrics are unchanged. Every row in
 `evidence_1413.jsonl` retains the same four-field schema: `id`, `source_id`,
 `article_id`, and `text`.
 
-After release auditing, the entity adapter was retrained from the included
-train-only occurrence resources and the case-sensitive `HF`/`Hf` resolution
-error was corrected. The updated run keeps Strict-Hit@1 (0.774336),
-Strict-Hit@10 (0.951327), and the learned mean weights unchanged; Strict-MRR@10
-changes from 0.835428 to 0.835400. All bundled predictions and tables correspond
-to the audited implementation.
 
 Run `python scripts/verify_release.py` and `pytest` to check the package.
 `manifest/SHA256SUMS.txt` records file hashes. No server credentials or server

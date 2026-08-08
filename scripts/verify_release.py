@@ -114,10 +114,7 @@ def main() -> None:
     if any(str(row.get("article_id") or "") not in article_ids for row in evidence_rows):
         failures.append("unresolved evidence article link")
 
-    for relative in (
-        "data/raw/entity_training/indexed_docs.pkl",
-        "data/raw/entity_training/contextual_index.pkl",
-    ):
+    for relative in ("data/raw/entity_training/indexed_docs.pkl",):
         path = root / relative
         with path.open("rb") as handle:
             index_rows = pickle.load(handle)
@@ -136,16 +133,6 @@ def main() -> None:
             if str(index_row.get("text") or "") != str(evidence_row["text"]):
                 failures.append(f"entity index text order: {relative}:{position}")
                 break
-
-    repair_report = json.loads(
-        (root / "data/raw/entity_training/index_id_repair_report.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    if repair_report.get("schema") != "geolexvec.entity-index-id-repair.v1":
-        failures.append("entity index repair report schema")
-    if any(row.get("unknown_ids_after") != 0 for row in repair_report.get("indexes", [])):
-        failures.append("entity index repair retained placeholder IDs")
 
     aliases = json.loads(
         (root / "data/raw/entity_training/en_zh_equivalence_audit.json").read_text(
@@ -203,6 +190,16 @@ def main() -> None:
         )
         if len(predictions) != 2034 * 4 or predictions["question_id"].nunique() != 2034:
             failures.append(f"three-module predictions: {seed}")
+        expected_prediction_columns = {
+            "question_id", "model", "outer_fold", "vector_seed",
+            *{
+                f"{metric}@{k}"
+                for k in range(1, 11)
+                for metric in ("Strict-Hit", "Strict-Recall", "Strict-MRR", "nDCG")
+            },
+        }
+        if set(predictions.columns) != expected_prediction_columns:
+            failures.append(f"non-compact three-module predictions: {seed}")
         report = json.loads(
             (root / f"data/processed/entity_vectors/seed_{seed}/report.json").read_text(
                 encoding="utf-8"
@@ -286,7 +283,6 @@ def main() -> None:
         "geolexvec/validation.py",
         "scripts/reproduce_main.py",
         "scripts/reproduce_tables.py",
-        "scripts/repair_entity_index_ids.py",
         "scripts/assemble_entity_internal_results.py",
     )
     for relative in required_code:
@@ -302,6 +298,24 @@ def main() -> None:
     for relative in forbidden_legacy:
         if (root / relative).exists():
             failures.append(f"legacy code retained: {relative}")
+
+    forbidden_process_outputs = (
+        "data/raw/entity_training/context_surface_vectors.npy",
+        "data/raw/entity_training/contextual_index.pkl",
+        "data/raw/entity_training/index_id_repair_report.json",
+        "scripts/repair_entity_index_ids.py",
+        "results/three_module_seeds/analysis",
+        "results/manuscript_tables/baseline_evaluation",
+        "results/manuscript_tables/three_module_per_question.csv",
+    )
+    for relative in forbidden_process_outputs:
+        if (root / relative).exists():
+            failures.append(f"process artifact retained: {relative}")
+    for seed in SEEDS:
+        seed_dir = root / f"results/three_module_seeds/seed_{seed}"
+        allowed = {"per_question_metrics.csv", "selected_fold_weights.csv"}
+        if {path.name for path in seed_dir.iterdir()} != allowed:
+            failures.append(f"process outputs retained: seed_{seed}")
 
     patterns = (
         re.compile(r"connect\.(?:westd|bjb2)\.seetacloud\.com", re.I),

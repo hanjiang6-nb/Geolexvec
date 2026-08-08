@@ -49,7 +49,7 @@ def evaluate(
     gold_rows: dict[str, dict[str, Any]],
     runs: dict[str, dict[str, list[dict[str, Any]]]],
     k_list: list[int],
-    out_dir: str | Path,
+    out_dir: str | Path | None,
     precision_denominator: str = "fixed_k",
     write_aggregates: bool = True,
 ) -> dict[str, Any]:
@@ -66,8 +66,9 @@ def evaluate(
             raise ValueError(
                 f"{model} query coverage mismatch: missing={len(missing)}, extra={len(extra)}"
             )
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=True)
+    out = Path(out_dir) if out_dir is not None else None
+    if out is not None:
+        out.mkdir(parents=True, exist_ok=True)
     per_question: list[dict[str, Any]] = []
     for model, by_qid in sorted(runs.items()):
         for qid, gold in sorted(gold_rows.items()):
@@ -125,9 +126,10 @@ def evaluate(
                     )
             per_question.append(row)
 
-    write_csv(out / "per_question_retrieval_metrics.csv", per_question)
-    write_qrels(gold_rows, out)
-    write_run_files(runs, out / "runs")
+    if out is not None:
+        write_csv(out / "per_question_retrieval_metrics.csv", per_question)
+        write_qrels(gold_rows, out)
+        write_run_files(runs, out / "runs")
     if not write_aggregates:
         return {
             "per_question": per_question,
@@ -150,11 +152,12 @@ def evaluate(
     by_difficulty = _aggregate(per_question, ["model", "difficulty"], metric_cols)
     by_answerable = _aggregate(per_question, ["model", "answerable"], metric_cols)
 
-    write_csv(out / "overall_retrieval_metrics.csv", overall)
-    write_csv(out / "retrieval_metrics_by_question_type.csv", by_type)
-    write_csv(out / "retrieval_metrics_by_geological_topic.csv", by_topic)
-    write_csv(out / "retrieval_metrics_by_difficulty.csv", by_difficulty)
-    write_csv(out / "retrieval_metrics_by_answerability.csv", by_answerable)
+    if out is not None:
+        write_csv(out / "overall_retrieval_metrics.csv", overall)
+        write_csv(out / "retrieval_metrics_by_question_type.csv", by_type)
+        write_csv(out / "retrieval_metrics_by_geological_topic.csv", by_topic)
+        write_csv(out / "retrieval_metrics_by_difficulty.csv", by_difficulty)
+        write_csv(out / "retrieval_metrics_by_answerability.csv", by_answerable)
     return {
         "per_question": per_question,
         "overall": overall,

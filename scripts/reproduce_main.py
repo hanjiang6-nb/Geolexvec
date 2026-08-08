@@ -57,8 +57,6 @@ def main() -> None:
                 str(seed),
                 "--fold-seed",
                 "20260725",
-                "--iterations",
-                str(args.iterations),
             ],
             root,
             out_dir / "logs" / f"seed_{seed}.log",

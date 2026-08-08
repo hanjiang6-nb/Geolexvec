@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -15,11 +13,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from geolexvec.validation import (  # noqa: E402
-    balanced_group_folds,
-    cluster_inference,
-    write_csv,
-)
+from geolexvec.validation import balanced_group_folds, write_csv  # noqa: E402
 from geolexvec.nested_search import (  # noqa: E402
     build_run,
     nested_search,
@@ -45,40 +39,6 @@ SUMMARY_METRICS = (
 )
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def trend_rows(frame: pd.DataFrame) -> list[dict[str, Any]]:
-    subsets = {
-        "all": np.ones(len(frame), dtype=bool),
-        "changed": frame["question_changed"].astype(bool).to_numpy(),
-        "unchanged": ~frame["question_changed"].astype(bool).to_numpy(),
-    }
-    rows: list[dict[str, Any]] = []
-    for subset, mask in subsets.items():
-        selected = frame.loc[mask]
-        for model, model_rows in selected.groupby("model", sort=False):
-            for k in TOP_K:
-                for metric in ("Strict-Hit", "Strict-Recall", "Strict-MRR", "nDCG"):
-                    column = f"{metric}@{k}"
-                    rows.append(
-                        {
-                            "subset": subset,
-                            "model": model,
-                            "k": k,
-                            "metric": metric,
-                            "value": float(model_rows[column].mean()),
-                            "n_questions": len(model_rows),
-                        }
-                    )
-    return rows
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Nested three-module ablation for Alias-Aware Fusion."
@@ -88,7 +48,6 @@ def main() -> None:
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--vector-seed", type=int, required=True)
     parser.add_argument("--fold-seed", type=int, default=20260725)
-    parser.add_argument("--iterations", type=int, default=20000)
     args = parser.parse_args()
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -114,8 +73,6 @@ def main() -> None:
                 )
             entity_features = all_entity_features[:, :, variants.index("AliasAwareFusion")]
         relevance = np.asarray(cached["relevance"], dtype=np.uint8)
-        formula_version = str(cached["formula_version"].item())
-        cache_fingerprint = str(cached["fingerprint"].item())
 
     if len(qids) != 2034 or len(evidence_ids) != 1413 or set(qids) != set(gold):
         raise RuntimeError("cache does not match the 2,034-question, 1,413-evidence benchmark")
@@ -177,17 +134,13 @@ def main() -> None:
                 f"vector seed {args.vector_seed}, fold {fold_number}/5: {model}",
                 flush=True,
             )
-            weights, history = nested_search(
+            weights, _ = nested_search(
                 features,
                 relevance,
                 train_indices,
                 inner_fold_ids,
                 constraint,
                 target,
-            )
-            write_csv(
-                args.out_dir / "grid_history" / f"fold_{fold_number}_{model}.csv",
-                history,
             )
             runs[model].update(
                 build_run(qids, test_indices, features, evidence_ids, weights)
@@ -208,94 +161,26 @@ def main() -> None:
     if any(len(run) != len(qids) for run in runs.values()):
         raise AssertionError("one or more out-of-fold runs are incomplete")
 
-    evaluation = evaluate(gold, runs, list(TOP_K), args.out_dir / "evaluation")
+    evaluation = evaluate(
+        gold, runs, list(TOP_K), None, write_aggregates=False
+    )
     per_question = pd.DataFrame(evaluation["per_question"])
     per_question["outer_fold"] = per_question["question_id"].map(fold_by_qid)
-    per_question["question_changed"] = per_question["question_id"].map(
-        {qid: bool(gold[qid].get("question_changed", False)) for qid in qids}
-    )
     per_question["vector_seed"] = args.vector_seed
+    metric_columns = [
+        f"{metric}@{k}"
+        for k in TOP_K
+        for metric in ("Strict-Hit", "Strict-Recall", "Strict-MRR", "nDCG")
+    ]
+    per_question = per_question[
+        ["question_id", "model", "outer_fold", "vector_seed", *metric_columns]
+    ]
     per_question.to_csv(
         args.out_dir / "per_question_metrics.csv", index=False, encoding="utf-8-sig"
     )
-
-    fold_metrics = (
-        per_question.groupby(["outer_fold", "model"], as_index=False)[
-            list(SUMMARY_METRICS)
-        ]
-        .mean()
-        .rename(columns={"outer_fold": "fold"})
-    )
-    fold_metrics.to_csv(
-        args.out_dir / "five_fold_metrics.csv", index=False, encoding="utf-8-sig"
-    )
-    summary = fold_metrics.groupby("model", as_index=False).agg(
-        **{
-            f"{metric}_{stat}": (metric, stat)
-            for metric in SUMMARY_METRICS
-            for stat in ("mean", "std")
-        }
-    )
-    summary.to_csv(
-        args.out_dir / "mean_std_metrics.csv", index=False, encoding="utf-8-sig"
-    )
-    pd.DataFrame(trend_rows(per_question)).to_csv(
-        args.out_dir / "topk_trend_long.csv", index=False, encoding="utf-8-sig"
-    )
-
-    significance = cluster_inference(
-        per_question,
-        {qid: groups[index] for index, qid in enumerate(qids)},
-        args.iterations,
-        baseline="AliasAwareFusion",
-        comparisons=[model for model in MODEL_ORDER if model != "AliasAwareFusion"],
-        metrics=list(SUMMARY_METRICS),
-        seed=args.fold_seed + 7001,
-    )
-    write_csv(args.out_dir / "cluster_significance.csv", significance)
     write_csv(args.out_dir / "selected_fold_weights.csv", selected_rows)
-    (args.out_dir / "oof_runs.json").write_text(
-        json.dumps(
-            {
-                "vector_seed": args.vector_seed,
-                "fold_seed": args.fold_seed,
-                "fold_by_qid": fold_by_qid,
-                "runs": runs,
-            },
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
-    protocol = {
-        "scope": "final three-module leave-one-module-out ablation",
-        "models": list(MODEL_ORDER),
-        "feature_order": ["text", "contextual_entity", "phrase"],
-        "entity_formula_version": formula_version,
-        "entity_definition": (
-            "each query entity uses the maximum non-negative learned cosine over all "
-            "evidence entities; scores are averaged by query entity count"
-        ),
-        "vector_definition": (
-            "L2-normalized original vector plus rank-8 low-rank residual, followed by "
-            "gated canonical prototype fusion and a final L2 normalization"
-        ),
-        "weight_selection": (
-            "weights are reselected for every model and outer fold using four grouped "
-            "inner folds; removed-module weight is constrained to zero"
-        ),
-        "outer_validation": "five source-document-disjoint folds",
-        "top_k": list(TOP_K),
-        "vector_seed": args.vector_seed,
-        "fold_seed": args.fold_seed,
-        "question_count": len(qids),
-        "evidence_count": len(evidence_ids),
-        "cache_fingerprint": cache_fingerprint,
-        "input_sha256": {"gold": sha256(args.gold), "cache": sha256(args.cache)},
-    }
-    (args.out_dir / "protocol.json").write_text(
-        json.dumps(protocol, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    print(summary.sort_values("Strict-MRR@10_mean", ascending=False).to_string(index=False))
+    summary = per_question.groupby("model", as_index=False)[list(SUMMARY_METRICS)].mean()
+    print(summary.sort_values("Strict-MRR@10", ascending=False).to_string(index=False))
 
 
 if __name__ == "__main__":

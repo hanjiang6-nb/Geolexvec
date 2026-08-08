@@ -211,16 +211,7 @@ def train_variant(
     report = {
         "variant": variant,
         "seed": seed,
-        "rank": rank,
-        "epochs": epochs,
-        "learning_rate": learning_rate,
-        "temperature": temperature,
-        "margin": margin,
-        "initial_gate": 0.5,
         "learned_gate": float(model.gate.detach()),
-        "group_names": group_names,
-        "history": history,
-        "protocol": "same supervised entity-context training data and losses; one internal component removed",
     }
     return model, group_names, report
 
@@ -284,7 +275,7 @@ def main() -> None:
 
     vectors = np.load(args.vectors, allow_pickle=True).item()
     pairs = load_alias_pairs(args.aliases)
-    grouped, occurrence_audit = load_occurrences(args.occurrences, args.metadata)
+    grouped, _occurrence_audit = load_occurrences(args.occurrences, args.metadata)
     train_pairs, test_pairs = eligible_pairs(pairs, grouped)
     train_anchor_count = sum(len(values) for values in grouped["train"].values())
     held_out_occurrence_count = sum(len(values) for values in grouped["test"].values())
@@ -354,7 +345,6 @@ def main() -> None:
             report["schema"] = "geolexvec.entity-adapter.internal-report.v1"
             report["protocol"] = checkpoint["training_protocol"]
             report["checkpoint_sha256"] = checkpoint_hash
-            report["occurrence_audit"] = occurrence_audit
             (variant_seed_dir / "report.json").write_text(
                 json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
             )

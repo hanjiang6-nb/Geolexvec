@@ -402,7 +402,7 @@ def main() -> None:
     )
 
     for seed in args.seeds:
-        model, group_names, history = train_encoder(
+        model, group_names, _history = train_encoder(
             grouped,
             train_pairs,
             anchors,
@@ -436,14 +436,15 @@ def main() -> None:
         outputs = transform_outputs(
             model, group_names, train_pairs, vectors, paths["index"], seed_dir
         )
+        final_evaluation = {
+            key: value for key, value in evaluation.items() if key != "details"
+        }
         report = {
             "schema": "geolexvec.entity-adapter.report.v1",
             "seed": seed,
             "learned_gate": float(model.gate.detach()),
-            "group_names": group_names,
             "protocol": training_protocol,
-            "representation_evaluation": evaluation,
-            "training_history": history,
+            "representation_evaluation": final_evaluation,
             "artifacts": {
                 "checkpoint": checkpoint_path.name,
                 **{
@@ -493,7 +494,6 @@ def main() -> None:
                 **{
                     key: value
                     for key, value in report["representation_evaluation"].items()
-                    if key != "details"
                 },
             }
             for report in seed_reports

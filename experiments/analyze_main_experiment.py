@@ -29,6 +29,25 @@ METRICS = (
 )
 
 
+def topk_rows(frame: pd.DataFrame, seed: int) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for model, model_rows in frame.groupby("model", sort=False):
+        for k in range(1, 11):
+            for metric in ("Strict-Hit", "Strict-Recall", "Strict-MRR", "nDCG"):
+                rows.append(
+                    {
+                        "subset": "all",
+                        "model": model,
+                        "k": k,
+                        "metric": metric,
+                        "value": float(model_rows[f"{metric}@{k}"].mean()),
+                        "n_questions": len(model_rows),
+                        "vector_seed": seed,
+                    }
+                )
+    return rows
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Aggregate the GeoLexVec main experiment.")
     parser.add_argument("--gold", type=Path, required=True)
@@ -53,9 +72,7 @@ def main() -> None:
         weights = pd.read_csv(seed_dir / "selected_fold_weights.csv")
         weights["vector_seed"] = seed
         weight_frames.append(weights)
-        trend = pd.read_csv(seed_dir / "topk_trend_long.csv")
-        trend["vector_seed"] = seed
-        trend_frames.append(trend)
+        trend_frames.append(pd.DataFrame(topk_rows(frame, seed)))
         selected = frame.loc[frame["model"] == "AliasAwareFusion"]
         seed_rows.append(
             {

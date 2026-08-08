@@ -1,35 +1,21 @@
 # Data Notice
 
-This release includes the reviewed benchmark records and the 1,413 candidate
-evidence sentences needed to reproduce the reported retrieval experiment.
-It also contains standardized metadata for 356 source-article records. All
-1,413 evidence sentences are linked to one of these article records; no
-placeholder article identifiers remain.
-It also includes the 62 accepted alias pairs and the NER-derived occurrence
-resources used by entity-vector adaptation. The original source publication
-files and server credentials are not included.
+This repository includes the data required to reproduce the reported GeoLexVec
+retrieval experiments:
 
-The article-link correction changes identifiers only. Sentence text, candidate
-order, feature arrays, relevance labels, model scores, and evaluation metrics
-are unchanged. Identifier references in the released caches, baseline runs,
-and prediction files were updated together.
+- 2,034 reviewed queries and relevance labels;
+- 1,413 candidate evidence sentences;
+- fixed source-document groups and nested-validation folds;
+- 62 accepted entity-equivalence mappings;
+- NER-derived occurrence resources used by entity-vector adaptation.
 
-The two occurrence-level entity indexes are also aligned to the standardized
-evidence IDs. Their 1,413-row order, sentence text, vectors, and record schema
-are unchanged; 98 placeholder article IDs and the remaining legacy sentence-ID
-forms were replaced by the corresponding benchmark `id` and `article_id`.
+The 1,413 candidate evidence sentences are identical, in content and order, to
+the sentence records released in CoalGeoNER Version 1 under CC BY 4.0:
 
-The final released entity checkpoints were then retrained from the included
-train-only occurrence resources with structured input provenance. 
-he bundled predictions and reported metrics were regenerated rather
-than reusing the previous run.
+https://doi.org/10.6084/m9.figshare.32305830.v1
 
-The alias resource is used to supervise representation learning. The final
-retrieval score compares every query entity with every evidence entity using
-the learned vectors; it does not apply a hard alias or same-canonical filter.
+The repository contains source-link identifiers for 356 article records. It
+does not redistribute complete scientific articles or article abstracts.
 
-The 1,413 candidate evidence sentences are identical, in both content and
-order, to the sentence records released in CoalGeoNER Version 1 under CC BY
-4.0. This repository does not redistribute complete scientific articles or
-article abstracts. The MIT License applies only to software; benchmark data
-are governed by `DATA_LICENSE.md`.
+The MIT License applies only to software. Benchmark data and annotations are
+governed by `DATA_LICENSE.md`.

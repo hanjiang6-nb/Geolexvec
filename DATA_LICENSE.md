@@ -15,9 +15,6 @@ CoalGeoNER Version 1 is released under the Creative Commons Attribution 4.0
 International License (CC BY 4.0). Reuse of these sentences must retain the
 required attribution to that dataset.
 
-The 2,034 reviewed queries, relevance labels, source-group assignments, alias
-mappings, and derived benchmark metadata created for GeoLexVec are also
-released under CC BY 4.0 unless a file states otherwise.
 
 This repository does not redistribute complete scientific articles or article
 abstracts. Copyright in the original publications remains with the respective

@@ -20,9 +20,8 @@ are unchanged; 98 placeholder article IDs and the remaining legacy sentence-ID
 forms were replaced by the corresponding benchmark `id` and `article_id`.
 
 The final released entity checkpoints were then retrained from the included
-train-only occurrence resources with structured input provenance. Correcting
-the case-sensitive `HF`/`Hf` mapping changes a small number of entity-feature
-values; the bundled predictions and reported metrics were regenerated rather
+train-only occurrence resources with structured input provenance. 
+he bundled predictions and reported metrics were regenerated rather
 than reusing the previous run.
 
 The alias resource is used to supervise representation learning. The final
